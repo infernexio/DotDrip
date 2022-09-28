@@ -128,7 +128,7 @@ function notification(title, message) {
 
     chrome.notifications.create({
         type: "basic",
-        iconUrl: chrome.runtime.getURL("icons/dotgit-48.png"),
+        iconUrl: chrome.runtime.getURL("icons/dotrip-64.png"),
         title: title,
         message: message
     });
