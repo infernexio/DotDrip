@@ -1,9 +1,13 @@
 const DEFAULT_OPTIONS = {
     "functions": {
         "git": true,
-        "svn": false,
-        "hg": false,
-        "env": false
+        "svn": true,
+        "hg": true,
+        "env": true,
+        "zip": true,
+        "tar": true,
+        "targz": true,
+        "rar": true,
     },
     "color": "grey",
     "max_sites": 100,
@@ -12,7 +16,7 @@ const DEFAULT_OPTIONS = {
         "download": true
     },
     "check_opensource": true,
-    "check_securitytxt": true,
+    "check_securitytxt": false,
     "download": {
         "wait": 100,
         "max_wait": 10000,
@@ -35,6 +39,11 @@ const GIT_HEAD_HEADER = "ref: refs/heads/";
 const SVN_PATH = "/.svn/";
 const SVN_DB_PATH = SVN_PATH + "wc.db";
 const SVN_DB_HEADER = "SQLite";
+
+const ZIP_PATH = "zip";
+const TAR_PATH = "tar";
+const TAR_GZ_PATH = "tar.gz";
+const RAR_PATH = "rar";
 
 const HG_PATH = "/.hg/";
 const HG_MANIFEST_PATH = HG_PATH + "store/00manifest.i";
@@ -488,7 +497,11 @@ function set_options(options) {
     check_git = options.functions.git;
     check_svn = options.functions.svn;
     check_hg = options.functions.hg;
+    check_zip = options.functions.zip;
     check_env = options.functions.env;
+    check_rar = options.functions.rar;
+    check_tar = options.functions.tar;
+    check_targz = options.functions.targz;
     blacklist = options.blacklist;
 }
 
@@ -546,6 +559,18 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({status: true});
     } else if (request.type === "env") {
         check_env = request.value;
+        sendResponse({status: true});
+    } else if (request.type == "zip") {
+        check_zip = request.value;
+        sendResponse({status: true});
+    } else if (request.type == "rar") {
+        check_rar = request.value;
+        sendResponse({status: true});
+    } else if (request.type == "tar") {
+        check_tar = request.value;
+        sendResponse({status: true});
+    } else if (request.type == "targz") {
+        check_targz = request.value;
         sendResponse({status: true});
     } else if (request.type === "notification_new_git") {
         notification_new_git = request.value;
@@ -723,6 +748,42 @@ async function precessQueue(visitedSite) {
                 chrome.storage.local.set(visitedSite);
             }
         }
+        if (check_zip) {
+            if (await checkZipBackup(url) !== false) {
+                if (check_securitytxt && securitytxt === null) {
+                    securitytxt = await checkSecuritytxt(url);
+                }
+                visitedSite.withExposedGit.push({type: "zip", url: url, securitytxt: securitytxt});
+                chrome.storage.local.set(visitedSite);
+            }
+        }
+        if (check_rar) {
+            if (await checkRarBackup(url) !== false) {
+                if (check_securitytxt && securitytxt === null) {
+                    securitytxt = await checkSecuritytxt(url);
+                }
+                visitedSite.withExposedGit.push({type: "rar", url: url, securitytxt: securitytxt});
+                chrome.storage.local.set(visitedSite);
+            }
+        }
+        if (check_tar) {
+            if (await checkTarBackup(url) !== false) {
+                if (check_securitytxt && securitytxt === null) {
+                    securitytxt = await checkSecuritytxt(url);
+                }
+                visitedSite.withExposedGit.push({type: "tar", url: url, securitytxt: securitytxt});
+                chrome.storage.local.set(visitedSite);
+            }
+        }
+        if (check_targz) {
+            if (await checkTarGzBackup(url) !== false) {
+                if (check_securitytxt && securitytxt === null) {
+                    securitytxt = await checkSecuritytxt(url);
+                }
+                visitedSite.withExposedGit.push({type: "targz", url: url, securitytxt: securitytxt});
+                chrome.storage.local.set(visitedSite);
+            }
+        }
         if (check_hg) {
             if (await checkHg(url) !== false) {
                 if (check_securitytxt && securitytxt === null) {
@@ -832,6 +893,120 @@ async function checkGitConfig(url) {
     }
 
     return false;
+}
+
+async function checkZipBackup(url) {
+    const {hostname} = new URL(url);
+    let items = hostname.split('.');
+    let path = "";
+    for (item in items) {
+        path += items[item] + '.';
+    }
+    path += ZIP_PATH;
+    const to_check = url + '/' + path;
+    try {
+        const response = await fetchWithTimeout(to_check, {
+            redirect: "manual",
+            timeout: 10000
+        });
+        const content_type = response.headers.get('Content-Type');
+        if (content_type == 'application/zip' || content_type == 'application/octet-stream') {
+            return true;
+        }
+    }
+
+    catch (error) {
+        // Timeouts if the request takes longer than X seconds
+        //console.log(error.name);
+    }
+    return false;
+
+}
+
+async function checkRarBackup(url) {
+    //	application/vnd.rar || application/octet-stream
+    const {hostname} = new URL(url);
+    let items = hostname.split('.');
+    let path = "";
+    for (item in items) {
+        path += items[item] + '.';
+    }
+    path += RAR_PATH;
+    const to_check = url + '/' + path;
+    try {
+        const response = await fetchWithTimeout(to_check, {
+            redirect: "manual",
+            timeout: 10000
+        });
+        const content_type = response.headers.get('Content-Type');
+        if (content_type == 'application/vnd.rar' || content_type == 'application/octet-stream') {
+            return true;
+        }
+    }
+
+    catch (error) {
+        // Timeouts if the request takes longer than X seconds
+        //console.log(error.name);
+    }
+    return false;
+}
+
+async function checkTarBackup(url) {
+    //  application/x-tar || application/octet-stream
+    const {hostname} = new URL(url);
+    let items = hostname.split('.');
+    let path = "";
+    for (item in items) {
+        path += items[item] + '.';
+    }
+    path += TAR_PATH;
+    const to_check = url + '/' + path;
+    try {
+        const response = await fetchWithTimeout(to_check, {
+            redirect: "manual",
+            timeout: 10000
+        });
+        const content_type = response.headers.get('Content-Type');
+        if (content_type == 'application/x-tar' || content_type == 'application/octet-stream') {
+            return true;
+        }
+    }
+
+    catch (error) {
+        // Timeouts if the request takes longer than X seconds
+        //console.log(error.name);
+    }
+    return false;
+
+}
+
+async function checkTarGzBackup(url) {
+    //application/gzip  || application/x-gzip || application/octet-stream
+    const {hostname} = new URL(url);
+    let items = hostname.split('.');
+    let path = "";
+    for (item in items) {
+        path += items[item] + '.';
+    }
+    path += TAR_GZ_PATH;
+    const to_check = url + '/' + path;
+    try {
+        const response = await fetchWithTimeout(to_check, {
+            redirect: "manual",
+            timeout: 10000
+        });
+        const content_type = response.headers.get('Content-Type');
+        if (content_type == 'application/gzip' || content_type == 'application/x-gzip' || content_type == 'application/octet-stream') {
+            return true;
+        }
+    }
+
+    catch (error) {
+        // Timeouts if the request takes longer than X seconds
+        //console.log(error.name);
+    }
+    return false;
+
 }
 
 async function checkOpenSource(url) {

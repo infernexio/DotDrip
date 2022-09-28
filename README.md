@@ -5,3 +5,12 @@
 # DotGit
 
 Credits go to original author. Made some minor changes to help with automating bugbounties.
+Added the ability to check for site backups.
+
+## Installation
+
+```
+git clone https://github.com/vdrv/DotRip
+```
+
+Drag and drop the repo into your chrome extenstions.

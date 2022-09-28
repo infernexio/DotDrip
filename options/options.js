@@ -11,6 +11,14 @@ function set_gui(options) {
     document.getElementById("svnOff").checked = !options.functions.svn;
     document.getElementById("hgOn").checked = options.functions.hg;
     document.getElementById("hgOff").checked = !options.functions.hg;
+    document.getElementById("zipOn").checked = options.functions.zip;
+    document.getElementById("zipOff").checked = !options.functions.zip;
+    document.getElementById("rarOn").checked = options.functions.rar;
+    document.getElementById("rarOff").checked = !options.functions.rar;
+    document.getElementById("tarOn").checked = options.functions.tar;
+    document.getElementById("tarOff").checked = !options.functions.tar;
+    document.getElementById("targzOn").checked = options.functions.targz;
+    document.getElementById("targzOff").checked = !options.functions.targz;
     document.getElementById("envOn").checked = options.functions.env;
     document.getElementById("envOff").checked = !options.functions.env;
     document.getElementById("max_sites").value = options.max_sites;
@@ -56,6 +64,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 chrome.runtime.sendMessage({
                     type: e.target.name,
                     value: result.options.functions.hg
+                }, function (response) {
+                });
+            } else if (e.target.name === "zip") {
+                result.options.functions.zip = (e.target.value === "on");
+                chrome.storage.local.set(result);
+                chrome.runtime.sendMessage({
+                    type: e.target.name,
+                    value: result.options.functions.zip
+                }, function (response) {
+                });
+            } else if (e.target.name === "rar") {
+                result.options.functions.rar = (e.target.value === "on");
+                chrome.storage.local.set(result);
+                chrome.runtime.sendMessage({
+                    type: e.target.name,
+                    value: result.options.functions.rar
+                }, function (response) {
+                });
+            } else if (e.target.name === "tar") {
+                result.options.functions.tar = (e.target.value === "on");
+                chrome.storage.local.set(result);
+                chrome.runtime.sendMessage({
+                    type: e.target.name,
+                    value: result.options.functions.tar
+                }, function (response) {
+                });
+            } else if (e.target.name === "targz") {
+                result.options.functions.targz = (e.target.value === "on");
+                chrome.storage.local.set(result);
+                chrome.runtime.sendMessage({
+                    type: e.target.name,
+                    value: result.options.functions.targz
                 }, function (response) {
                 });
             } else if (e.target.name === "env") {

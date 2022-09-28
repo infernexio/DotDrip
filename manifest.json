@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "DotGit",
+  "name": "DotRip",
   "version": "4.6.8",
   "description": "An extension for checking if .git is exposed in visited websites",
   "icons": {
@@ -25,7 +25,7 @@
     ]
   },
   "browser_action": {
-    "default_title": "DotGit",
+    "default_title": "DotRip",
     "default_popup": "popup/popup.html"
   },
   "options_ui": {
