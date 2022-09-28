@@ -14,3 +14,6 @@ git clone https://github.com/vdrv/DotRip
 ```
 
 Drag and drop the repo into your chrome extenstions.
+
+## ToDo
+- [ ] Create a config based sysytem for importing files to scan
