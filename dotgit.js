@@ -163,7 +163,6 @@ function setBadge() {
     }
 }
 
-
 async function fetchWithTimeout(resource, options) {
     const {timeout = 10000} = options;
 
@@ -895,14 +894,20 @@ async function checkGitConfig(url) {
     return false;
 }
 
-async function checkZipBackup(url) {
+function mergePath(url, base_path) {
     const {hostname} = new URL(url);
     let items = hostname.split('.');
     let path = "";
     for (item in items) {
         path += items[item] + '.';
     }
-    path += ZIP_PATH;
+    path += base_path;
+    return path;
+}
+
+
+async function checkZipBackup(url) {
+    let path = mergePath(url, ZIP_PATH);
     const to_check = url + '/' + path;
     try {
         const response = await fetchWithTimeout(to_check, {
@@ -925,13 +930,7 @@ async function checkZipBackup(url) {
 
 async function checkRarBackup(url) {
     //	application/vnd.rar || application/octet-stream
-    const {hostname} = new URL(url);
-    let items = hostname.split('.');
-    let path = "";
-    for (item in items) {
-        path += items[item] + '.';
-    }
-    path += RAR_PATH;
+    let path = mergePath(url, RAR_PATH);
     const to_check = url + '/' + path;
     try {
         const response = await fetchWithTimeout(to_check, {
@@ -953,13 +952,7 @@ async function checkRarBackup(url) {
 
 async function checkTarBackup(url) {
     //  application/x-tar || application/octet-stream
-    const {hostname} = new URL(url);
-    let items = hostname.split('.');
-    let path = "";
-    for (item in items) {
-        path += items[item] + '.';
-    }
-    path += TAR_PATH;
+    let path = mergePath(url, TAR_PATH);
     const to_check = url + '/' + path;
     try {
         const response = await fetchWithTimeout(to_check, {
@@ -982,13 +975,7 @@ async function checkTarBackup(url) {
 
 async function checkTarGzBackup(url) {
     //application/gzip  || application/x-gzip || application/octet-stream
-    const {hostname} = new URL(url);
-    let items = hostname.split('.');
-    let path = "";
-    for (item in items) {
-        path += items[item] + '.';
-    }
-    path += TAR_GZ_PATH;
+    let path = mergePath(url, TAR_GZ_PATH);
     const to_check = url + '/' + path;
     try {
         const response = await fetchWithTimeout(to_check, {
