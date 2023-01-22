@@ -1,5 +1,7 @@
 const DEFAULT_OPTIONS = {
     "functions": {
+        "uid": true,
+        "bzconf": true,
         "git": true,
         "svn": true,
         "hg": true,
@@ -31,9 +33,15 @@ const DEFAULT_OPTIONS = {
 const WS_SEARCH = /(ws)(s)?:\/\//;
 const WS_REPLACE = "http$2://";
 
+// looking for passwords or usernames in the source code
+const UID = "uid:";
+const PASS = "passwd:";
+
+// looking for bzconf file that contains api keys
 const BZCONF_PATH = "/.bzconf";
 const BZCONF_HEADER = "key";
 
+// looking for .git which allows anyone to download the entire repository
 const GIT_PATH = "/.git/";
 const GIT_HEAD_PATH = GIT_PATH + "HEAD";
 const GIT_CONFIG_PATH = GIT_PATH + "config";
@@ -181,6 +189,29 @@ async function fetchWithTimeout(resource, options) {
     return response;
 }
 
+async function checkUid(url) {
+    const to_check = url;
+    try {
+        const response = await fetchWithTimeout(to_check, {
+            redirect: "manual",
+            timeout: 10000
+        });
+
+        if (response.status === 200) {
+            let text = await response.text();
+            if (text !== false && text.contains(UID) === true || text.contains(PASS)) {
+                setBadge();
+                notification("Found an exposed UID configuration", to_check);
+                return true;
+            }
+        }
+    } catch (error) {
+
+    }
+
+    return false;
+}
+
 async function checkBzconf(url) {
     const to_check = url + BZCONF_PATH;
     try {
@@ -198,6 +229,7 @@ async function checkBzconf(url) {
             }
         }
     } catch (error) {  
+
     }  
 
     return false;
