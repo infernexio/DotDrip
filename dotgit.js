@@ -31,6 +31,9 @@ const DEFAULT_OPTIONS = {
 const WS_SEARCH = /(ws)(s)?:\/\//;
 const WS_REPLACE = "http$2://";
 
+const BZCONF_PATH = "/.bzconf";
+const BZCONF_HEADER = "key";
+
 const GIT_PATH = "/.git/";
 const GIT_HEAD_PATH = GIT_PATH + "HEAD";
 const GIT_CONFIG_PATH = GIT_PATH + "config";
@@ -176,6 +179,28 @@ async function fetchWithTimeout(resource, options) {
     clearTimeout(id);
 
     return response;
+}
+
+async function checkBzconf(url) {
+    const to_check = url + BZCONF_PATH;
+    try {
+        const response = await fetchWithTimeout(to_check, {
+            redirect: "manual",
+            timeout: 10000
+        });
+
+        if (response.status === 200) {
+            let text = await response.text();
+            if (text !== false && text.startsWith(BZCONF_HEADER) === true) {
+                setBadge();
+                notification("Found an exposed bzconf configuration", to_check);
+                return true;
+            }
+        }
+    } catch (error) {  
+    }  
+
+    return false;
 }
 
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "DotRip",
+  "name": "DotDrip",
   "version": "4.6.7",
-  "description": "An extension for checking if .git is exposed in visited websites",
+  "description": "An extension for checking known vlunerabilites",
   "icons": {
     "32":"icons/dotrip-32.png",
     "64":"icons/dotrip-64.png",
