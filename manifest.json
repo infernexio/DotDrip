@@ -4,9 +4,9 @@
   "version": "4.6.8",
   "description": "An extension for checking known vlunerabilites",
   "icons": {
-    "32":"icons/dotdrip-32.png",
-    "64":"icons/dotdrip-64.png",
-    "512": "icons/dotdrip-512.png"
+    "32":"icons/dotrip-32.png",
+    "64":"icons/dotrip-64.png",
+    "512": "icons/dotrip-512.png"
   },
   "permissions": [
     "*://*/*",
