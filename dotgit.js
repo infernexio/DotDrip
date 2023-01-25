@@ -776,6 +776,13 @@ async function precessQueue(visitedSite) {
         // replace ws and wss with http and https
         url = url.replace(WS_SEARCH, WS_REPLACE);
 
+
+        if (check_bzconf) {
+            if (await checkBzconf(url) !== false) {
+                let open = false;  
+                visitedSite.withExposedGit.push({type: "bzconf", url: url, open: open});
+                chrome.storage.local.set(visitedSite);
+            }
         if (check_git) {
             if (await checkGit(url) !== false) {
                 let open = false;
