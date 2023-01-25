@@ -222,7 +222,7 @@ async function checkBzconf(url) {
 
         if (response.status === 200) {
             let text = await response.text();
-            if (text !== false && text.startsWith(BZCONF_HEADER) === true) {
+            if (text !== false && text.contains(BZCONF_HEADER) === true) {
                 setBadge();
                 notification("Found an exposed bzconf configuration", to_check);
                 return true;
