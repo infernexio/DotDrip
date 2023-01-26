@@ -38,7 +38,7 @@ const UID = "uid:";
 const PASS = "passwd:";
 
 // looking for bzconf file that contains api keys
-const BZCONF_PATH = "/.bzconf";
+const BZCONF_PATH = "/.bzconf/";
 const BZCONF_HEADER = "key";
 
 // looking for .git which allows anyone to download the entire repository
@@ -115,6 +115,7 @@ let notification_new_git;
 let notification_download;
 let check_opensource;
 let check_securitytxt;
+let check_bzconf;
 let check_git;
 let check_svn;
 let check_hg;
@@ -778,11 +779,14 @@ async function precessQueue(visitedSite) {
 
 
         if (check_bzconf) {
-            if (await checkBzconf(url) !== false) {
-                let open = false;  
-                visitedSite.withExposedGit.push({type: "bzconf", url: url, open: open});
+            if (await checkBzconf(url) !== false) { 
+                if (check_securitytxt && securitytxt === null) {
+                    securitytxt = await checkSecuritytxt(url);
+                }
+                visitedSite.withExposedGit.push({type: "bzconf", url: url, securitytxt: securitytxt});
                 chrome.storage.local.set(visitedSite);
             }
+        }
         if (check_git) {
             if (await checkGit(url) !== false) {
                 let open = false;
@@ -1103,3 +1107,4 @@ async function checkSecuritytxt(url) {
     }
     return false;
 }
+
