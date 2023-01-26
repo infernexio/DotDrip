@@ -551,6 +551,7 @@ function set_options(options) {
     notification_download = options.notification.download;
     check_opensource = options.check_opensource;
     check_securitytxt = options.check_securitytxt;
+    check_bzconf = options.functions.bzconf;
     check_git = options.functions.git;
     check_svn = options.functions.svn;
     check_hg = options.functions.hg;
@@ -605,6 +606,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 sendResponse({status: false});
             }
         });
+    } else if(request.type === "bzconf"){
+        check_bzconf = request.value;
+        sendResponse({status: true});
     } else if (request.type === "git") {
         check_git = request.value;
         sendResponse({status: true});
