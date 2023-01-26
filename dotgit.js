@@ -18,7 +18,7 @@ const DEFAULT_OPTIONS = {
         "download": true
     },
     "check_opensource": true,
-    "check_securitytxt": false,
+    "check_securitytxt": true,
     "download": {
         "wait": 100,
         "max_wait": 10000,
@@ -38,7 +38,7 @@ const UID = "uid:";
 const PASS = "passwd:";
 
 // looking for bzconf file that contains api keys
-const BZCONF_PATH = "/.bzconf/";
+const BZCONF_PATH = "/.bzconf";
 const BZCONF_HEADER = "key";
 
 // looking for .git which allows anyone to download the entire repository
